@@ -15,6 +15,6 @@ jobs:
         working-directory: .
         run: |
           docker login -u $env:USER -p $env:TOKEN
-          docker build -f win64.dockerfile -m 6G -t gocnak/chaos-vsbuildtools:latest
+          docker build -f win64.dockerfile -m 6G -t gocnak/chaos-vsbuildtools:latest .
           docker push gocnak/chaos-vsbuildtools:latest
           docker logout
