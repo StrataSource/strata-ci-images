@@ -28,10 +28,11 @@ ADD https://www.python.org/ftp/python/3.10.7/python-3.10.7-amd64.exe C:\TEMP\pyt
 RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
     Shortcuts=0 `
     Include_doc=0 `
-    Include_launcher=0 `
+    Include_launcher=1 `
     InstallLauncherAllUsers=0 `
     Include_tcltk=0 `
-    Include_test=0
+    Include_test=0 `
+    AssociateFiles=1
 
 # Install git min
 ADD https://github.com/git-for-windows/git/releases/download/v2.38.0.windows.1/MinGit-2.38.0-64-bit.zip C:\TEMP\MinGit.zip
