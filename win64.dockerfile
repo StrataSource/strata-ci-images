@@ -1,6 +1,7 @@
 # escape=`
 
-# Use the latest Windows Server Core Long Term Servicing Channel image
+# Use the 2019 Windows Server Core Long Term Servicing Channel image
+# NOTE: Updating this to ltsc2022 requires Windows Server 2022 to run it
 FROM mcr.microsoft.com/windows/servercore:ltsc2019 AS builder
 
 # Restore the default Windows shell for correct batch processing.
@@ -22,7 +23,7 @@ RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 # Fetch latest python
-ADD https://www.python.org/ftp/python/3.10.7/python-3.10.7-amd64.exe C:\TEMP\python_inst.exe
+ADD https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe C:\TEMP\python_inst.exe
 
 # Install python headlessly to the buildtools folder
 RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
@@ -35,14 +36,14 @@ RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
     AssociateFiles=1
 
 # Install git min
-ADD https://github.com/git-for-windows/git/releases/download/v2.38.0.windows.1/MinGit-2.38.0-64-bit.zip C:\TEMP\MinGit.zip
+ADD https://github.com/git-for-windows/git/releases/download/v2.39.1.windows.1/MinGit-2.39.1-64-bit.zip C:\TEMP\MinGit.zip
 
 SHELL ["powershell"]
 
 RUN Expand-Archive c:\TEMP\MinGit.zip -DestinationPath c:\BuildTools\git
 
 # Install git-lfs
-ADD https://github.com/git-lfs/git-lfs/releases/download/v3.2.0/git-lfs-windows-amd64-v3.2.0.zip C:\TEMP\git_lfs.zip
+ADD https://github.com/git-lfs/git-lfs/releases/download/v3.3.0/git-lfs-windows-amd64-v3.3.0.zip C:\TEMP\git_lfs.zip
 
 RUN Expand-Archive c:\TEMP\git_lfs.zip -DestinationPath c:\BuildTools\git\cmd
 
@@ -50,7 +51,7 @@ RUN Expand-Archive c:\TEMP\git_lfs.zip -DestinationPath c:\BuildTools\git\cmd
 RUN $item = Get-ChildItem -Path c:\BuildTools\git\cmd -Recurse -Filter "git-lfs.exe";Move-Item -Path $item.Fullname -Destination c:\BuildTools\git\cmd
 
 # Install ccache
-ADD https://github.com/ccache/ccache/releases/download/v4.7/ccache-4.7-windows-x86_64.zip c:\TEMP\ccache.zip
+ADD https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows-x86_64.zip c:\TEMP\ccache.zip
 
 RUN Expand-Archive c:\TEMP\ccache.zip -DestinationPath c:\BuildTools\ccache
 
