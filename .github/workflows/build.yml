@@ -12,9 +12,11 @@ jobs:
         env: 
           USER: ${{ secrets.DOCKER_USER }}
           TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
         working-directory: .
         run: |
-          docker login -u $env:USER -p $env:TOKEN
-          docker build -f win64.dockerfile -m 6G -t gocnak/chaos-vsbuildtools:latest .
-          docker push gocnak/chaos-vsbuildtools:latest
+          docker login -u $env:USER -p $env:TOKEN $env:DOCKER_REGISTRY
+          docker build -f win64.dockerfile -m 6G -t $env:DOCKER_REGISTRY/$env:IMAGE_NAME .
+          docker push $env:DOCKER_REGISTRY/$env:IMAGE_NAME
           docker logout
