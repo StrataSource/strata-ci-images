@@ -13,10 +13,12 @@ jobs:
           USER: ${{ secrets.DOCKER_USER }}
           TOKEN: ${{ secrets.DOCKER_TOKEN }}
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-          IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
         working-directory: .
         run: |
+          echo "Logging in..."
           docker login -u $env:USER -p $env:TOKEN $env:DOCKER_REGISTRY
-          docker build -f win64.dockerfile -m 6G -t $env:DOCKER_REGISTRY/$env:IMAGE_NAME .
-          docker push $env:DOCKER_REGISTRY/$env:IMAGE_NAME
+          echo "Building the image..."
+          docker build -f win64.dockerfile -m 6G -t $env:DOCKER_REGISTRY/ci/chaos-vsbuildtools:latest .
+          echo "Pushing the image to registry..."
+          docker push $env:DOCKER_REGISTRY/ci/chaos-vsbuildtools:latest
           docker logout
