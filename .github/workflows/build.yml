@@ -18,7 +18,7 @@ jobs:
           echo "Logging in..."
           docker login -u $env:USER -p $env:TOKEN $env:DOCKER_REGISTRY
           echo "Building the image..."
-          docker build -f win64.dockerfile -m 6G -t $env:DOCKER_REGISTRY/ci/chaos-vsbuildtools:latest .
+          docker build -f win64.dockerfile -m 6G -t $env:DOCKER_REGISTRY/chaos-initiative/ci/chaos-vsbuildtools:latest .
           echo "Pushing the image to registry..."
-          docker push $env:DOCKER_REGISTRY/ci/chaos-vsbuildtools:latest
+          docker push $env:DOCKER_REGISTRY/chaos-initiative/ci/chaos-vsbuildtools:latest
           docker logout
