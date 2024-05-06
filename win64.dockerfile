@@ -23,7 +23,7 @@ RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 # Fetch latest python
-ADD https://www.python.org/ftp/python/3.11.1/python-3.11.1-amd64.exe C:\TEMP\python_inst.exe
+ADD https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe C:\TEMP\python_inst.exe
 
 # Install python headlessly to the buildtools folder
 RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
@@ -36,39 +36,34 @@ RUN C:\TEMP\python_inst.exe /passive TargetDir=C:\BuildTools\python `
     AssociateFiles=1
 
 # Install git min
-ADD https://github.com/git-for-windows/git/releases/download/v2.39.1.windows.1/MinGit-2.39.1-64-bit.zip C:\TEMP\MinGit.zip
+ADD https://github.com/git-for-windows/git/releases/download/v2.45.0.windows.1/MinGit-2.45.0-64-bit.zip C:\TEMP\MinGit.zip
 
 SHELL ["powershell"]
 
 RUN Expand-Archive c:\TEMP\MinGit.zip -DestinationPath c:\BuildTools\git
 
 # Install git-lfs
-ADD https://github.com/git-lfs/git-lfs/releases/download/v3.3.0/git-lfs-windows-amd64-v3.3.0.zip C:\TEMP\git_lfs.zip
+ADD https://github.com/git-lfs/git-lfs/releases/download/v3.5.1/git-lfs-windows-amd64-v3.5.1.zip C:\TEMP\git_lfs.zip
 
 RUN Expand-Archive c:\TEMP\git_lfs.zip -DestinationPath c:\BuildTools\git\cmd
 
 # Thanks, git-lfs maintainers, very cool redundant artifact packaging
 RUN $item = Get-ChildItem -Path c:\BuildTools\git\cmd -Recurse -Filter "git-lfs.exe";Move-Item -Path $item.Fullname -Destination c:\BuildTools\git\cmd
 
-# Install ccache
-ADD https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows-x86_64.zip c:\TEMP\ccache.zip
-
-RUN Expand-Archive c:\TEMP\ccache.zip -DestinationPath c:\BuildTools\ccache
-
-# Thanks, ccache maintainers, very cool redundant artifact packaging
-RUN $item = Get-ChildItem -Path c:\BuildTools\ccache -Recurse -Filter "ccache.exe";Move-Item -Path $item.Fullname -Destination c:\BuildTools\ccache
-
 # Restore the default Windows shell for correct batch processing.
 SHELL ["cmd", "/S", "/C"]
 
 # Make sure our shell can find everything
-RUN setx PATH "%PATH%";c:\BuildTools\python;c:\BuildTools\python\scripts\;c:\BuildTools\git\cmd;c:\BuildTools\ccache /M
+RUN setx PATH "%PATH%";c:\BuildTools\python;c:\BuildTools\python\scripts\;c:\BuildTools\git\cmd /M
 
 # This might make git for windows run faster idk
 RUN setx HOME c:\BuildTools\ /M
 
 # Thanks, git maintainers, very cool security features
 RUN git config --system safe.directory *
+
+# Install any python packages needed
+RUN python -m pip install vpk
 
 # Define the entry point for the docker container.
 # This entry point starts the developer command prompt and launches the PowerShell shell.
