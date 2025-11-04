@@ -11,6 +11,8 @@ on:
 
 jobs:
   build-craftable:
+    permissions:
+        packages: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
