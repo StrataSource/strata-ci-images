@@ -1,21 +1,42 @@
 name: Build Docker Images
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The tag to use for the docker image
+        default: 'latest'
+        required: false
+        type: string
 
 jobs:
-  build-windows:
-    runs-on: windows-2019
+  build-craftable:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Build and push windows image
-        env: 
-          USER: ${{ secrets.DOCKER_USER }}
-          TOKEN: ${{ secrets.DOCKER_TOKEN }}
-          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-        working-directory: .
-        run: |
-          docker login -u $env:USER -p $env:TOKEN
-          docker build -f win64.dockerfile -m 6G -t $env:USER/chaos-vsbuildtools:latest .
-          docker push $env:USER/chaos-vsbuildtools:latest
-          docker logout
+      - name: Publish to GitHub Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: StrataSource/strata-ci-images/craftable
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: .
+          dockerfile: ./craftable.Dockerfile
+          tags: ${{ inputs.tag }}
+
+  # build-windows:
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - name: Build and push windows image
+  #       env: 
+  #         USER: ${{ secrets.DOCKER_USER }}
+  #         TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  #         DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+  #       working-directory: .
+  #       run: |
+  #         docker login -u $env:USER -p $env:TOKEN
+  #         docker build -f win64.dockerfile -m 6G -t $env:USER/chaos-vsbuildtools:latest .
+  #         docker push $env:USER/chaos-vsbuildtools:latest
+  #         docker logout
