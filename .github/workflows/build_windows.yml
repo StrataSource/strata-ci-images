@@ -1,0 +1,29 @@
+name: Build Windows Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The tag to use for the docker image
+        default: 'latest'
+        required: false
+        type: string
+
+jobs:
+  build-windows:
+    permissions:
+        packages: write
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@master
+      - name: Publish to GitHub Registry
+        uses: elgohr/Publish-Docker-Github-Action@v5
+        with:
+          name: StrataSource/strata-ci-images/strata-win
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          workdir: .
+          dockerfile: ./win64.dockerfile
+          tags: ${{ inputs.tag }}
+          buildoptions: "-m 6G"
